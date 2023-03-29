@@ -1,0 +1,100 @@
+version: "3"
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun-compose
+    hostname: gluetun-compose
+    # line above must be uncommented to allow external containers to connect. See https://github.com/qdm12/gluetun/wiki/Connect-a-container-to-gluetun#external-container-to-gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 8080:8080/tcp # qBittorrent Web UI
+      - 6881:6881/tcp # qBittorrent
+      - 6881:6881/udp # qBittorrent
+      - 8191:8191/tcp # Flaresolverr Web UI
+      - 9117:9117/tcp # Jackett Web UI
+      - 25500:25500/tcp # Soulseek Web UI
+      - 25501:25501/tcp # Soulseek Web UI https
+      - 50000:50000/tcp # Soulseek
+    volumes:
+      - /volume1/docker/gluetun:/gluetun
+    environment:
+      # See https://github.com/qdm12/gluetun/wiki
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - VPN_TYPE=openvpn
+      # OpenVPN:
+      - OPENVPN_USER=XXXX
+      - OPENVPN_PASSWORD=XXXX
+      - SERVER_COUNTRIES=France
+      # Timezone for accurate log times
+      - TZ=Europe/Paris
+      - PUID=100
+      - PGID=1000
+      
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr-compose
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/Paris
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+    
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett-compose
+    environment:
+      - PUID=100
+      - PGID=1000
+      - TZ=Europe/Paris
+      - AUTO_UPDATE=true #optional
+    volumes:
+      - /volume1/docker/jackett/config:/config
+      - /volume1/docker/jackett/downloads:/Downloads
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent-compose
+    environment:
+      - PUID=100
+      - PGID=1000
+      - TZ=Europe/Paris
+      - WEBUI_PORT=8080
+    volumes:
+      - /volume1/docker/qbittorrent/config:/config
+      - /volume1/Downloads:/Downloads
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+    
+  slskd:
+    image: slskd/slskd:latest
+    container_name: slskd-compose
+    environment:
+      - PUID=100
+      - PGID=1000
+      - TZ=Europe/Paris
+      - SLSKD_HTTP_PORT=25500
+      - SLSKD_HTTPS_PORT=25501
+      - SLSKD_SHARED_DIR=/shares
+      - SLSKD_DOWNLOADS_DIR=/downloads
+      - SLSKD_SLSK_USERNAME=XXXX
+      - SLSKD_SLSK_PASSWORD=XXXX
+      - SLSKD_USERNAME=XXXX
+      - SLSKD_PASSWORD=XXXX
+      - SLSKD_SHARE_FILTER=SYNOINDEX_MEDIA_INFO;\.DS_Store;\.ini;Thumbs.db;\#recycle;.@recycle;.@tmp;.@SynoEAStream;\@eaDir
+    volumes:
+      - /volume1/docker/soulseek:/app
+      - /volume1/music/Soulseek:/downloads
+      - /volume1/music:/shares
+    restart: unless-stopped
+    network_mode: "service:gluetun"
