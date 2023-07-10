@@ -159,7 +159,7 @@ services:
     
   slskd:
    # Aaaah, enfin Soulseek version serveur ! Pour moi, c'est meilleur reseau de partage de musique, on trouve tout (bon, je cherche quasi que du metal hein !)
-   # l'interface mobile est fonctionnel, ideal pour ajouter des albums sur Plex quand on vous recommande un groupe entre deux bieres : https://github.com/slskd/slskd
+   # l'interface mobile est fonctionnelle, ideal pour ajouter des albums sur Plex quand on vous recommande un groupe entre deux bieres : https://github.com/slskd/slskd
     image: slskd/slskd:latest
     container_name: slskd
     environment:
