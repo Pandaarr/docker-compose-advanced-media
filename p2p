@@ -33,6 +33,21 @@ services:
      - PGID=1000
      - TZ=Europe/Paris
 
+  bazarr:
+    container_name: bazarr
+    image: ghcr.io/linuxserver/bazarr:latest
+    environment:
+      - PUID=100
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - /srv/dev-disk-by-label-NAS/Config/Bazarr:/config
+      - /srv/dev-disk-by-label-NAS/Data/Movies:/movies
+      - /srv/dev-disk-by-label-NAS/Data/Series:/tv
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
   overseerr:
     image: lscr.io/linuxserver/overseerr:latest
     container_name: overseerr
