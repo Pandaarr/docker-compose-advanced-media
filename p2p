@@ -1,9 +1,10 @@
-# stack fonctionnant sur un Synology DS918+, il faudra peut-etre adapter les images si vous utilisez autre chose
+# stack fonctionnant sur un Synology DS918+ via Portainer-ce (portainer/portainer-ce:latest), il faudra peut-etre adapter les images si vous utilisez un autre serveur/systeme
 # editer les 'XXXX' ainsi que les PUID, PGID et volumes pour que cela fonctionne avec votre systeme
 
 version: "3"
 services:
-   radarr:
+  radarr:
+   # automatisation et gestion de telechargement de films : https://radarr.video/
     container_name: radarr
     image: linuxserver/radarr:latest
     restart: unless-stopped
@@ -18,7 +19,8 @@ services:
      - PGID=1000
      - TZ=Europe/Paris
 
-   sonarr:
+  sonarr:
+   # automatisation et gestion de telechargement de series : https://sonarr.tv/
     container_name: sonarr
     image: linuxserver/sonarr:latest
     restart: unless-stopped
@@ -34,6 +36,7 @@ services:
      - TZ=Europe/Paris
 
   bazarr:
+   # automatisation et gestion de telechargement de sous-titres pour films et series : https://www.bazarr.media/
     container_name: bazarr
     image: ghcr.io/linuxserver/bazarr:latest
     environment:
@@ -49,8 +52,9 @@ services:
     restart: unless-stopped
 
   overseerr:
-    image: lscr.io/linuxserver/overseerr:latest
+   # outil de gestion des requetes (les votres et ceux des utilisateurs de votre Plex) et de découverte de medias concu pour fonctionner avec Plex, Radarr et Sonarr : https://overseerr.dev/
     container_name: overseerr
+    image: lscr.io/linuxserver/overseerr:latest
     environment:
       - PUID=100
       - PGID=1000
@@ -62,17 +66,19 @@ services:
     restart: unless-stopped
 
   gluetun:
+   # client VPN pour plusieurs fournisseurs VPN, ecrit en Go et utilisant OpenVPN ou Wireguard, DNS sur TLS, avec quelques serveurs proxy integres : https://github.com/qdm12/gluetun#features
     image: qmcgaw/gluetun:latest
     container_name: gluetun
     hostname: gluetun
     labels:
-      com.centurylinklabs.watchtower.enable: "false" # la MAJ de Watchtower fait crasher le network des autres containers lies a gluetun, il vaut mieux forcer la MAJ en manuel de temps en temps
+      com.centurylinklabs.watchtower.enable: "false" # la MAJ de Watchtower fait crasher le network des autres containers lies a gluetun, il vaut mieux forcer la MAJ en manuel de temps en temps, cf. watchtower tout en bas
     # line above must be uncommented to allow external containers to connect. See https://github.com/qdm12/gluetun/wiki/Connect-a-container-to-gluetun#external-container-to-gluetun
     cap_add:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
+      # liste des ports des containers devant passer par le client VPN
       - 8888:8888/tcp # HTTP proxy
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
@@ -101,6 +107,7 @@ services:
     restart: always
       
   flaresolverr:
+   # serveur proxy pour contourner la protection Cloudflare et DDoS-GUARD, genre celle qu'il y a parfois sur YGG, a renseigner dans Jackett : https://github.com/FlareSolverr/FlareSolverr
     # DockerHub mirror flaresolverr/flaresolverr:latest
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
@@ -110,9 +117,11 @@ services:
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
       - TZ=Europe/Paris
     restart: always
+    # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
     
   jackett:
+   # passerelle entre vos trackers torrent (YGG par exemple) et Radarr, Sonarr... : https://github.com/Jackett/Jackett
     image: lscr.io/linuxserver/jackett:latest
     container_name: jackett
     environment:
@@ -126,9 +135,11 @@ services:
     labels:
       com.centurylinklabs.watchtower.enable: "false" # pour eviter le conflit avec la MAJ auto interne au container et celle de Watchtower
     restart: always
+    # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
 
   qbittorrent:
+   # client torrent : https://www.qbittorrent.org/
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
     environment:
@@ -140,9 +151,12 @@ services:
       - /volume1/docker/qbittorrent/config:/config
       - /volume1/Downloads:/Downloads
     restart: always
+    # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
     
   slskd:
+   # Aaaah, enfin Soulseek version serveur ! Pour moi, c'est meilleur reseau de partage de musique, on trouve tout (bon, je cherche quasi que du metal hein !)
+   # l'interface mobile est fonctionnel, ideal pour ajouter des albums sur Plex quand on vous recommande un groupe entre deux bieres : https://github.com/slskd/slskd
     image: slskd/slskd:latest
     container_name: slskd
     environment:
@@ -163,13 +177,15 @@ services:
       - /volume1/music/Soulseek:/downloads
       - /volume1/music:/shares
     restart: always
+    # la ligne ci-dessous signifie que ce container utilise la connection du client VPN Gluetun
     network_mode: "service:gluetun"
 
   watchtower:
+   # MAJ automatique de toutes les images de vos containers ne contenant pas le label 'com.centurylinklabs.watchtower.enable: "false"'
     container_name: watchtower
     image: containrrr/watchtower:amd64-latest
     restart: always
-    # pour lancer manuellement une MAJ, decommenter la ligne en-dessous et updater la stack
+    # pour lancer manuellement une MAJ, decommenter la ligne en-dessous et updater la stack ; il faudra re-updater la stack complete si Gluetun est MAJ afin que les containers passant par son network soient a nouveau fonctionnel
     #command: --run-once
     environment:
       - TZ=Europe/Paris
