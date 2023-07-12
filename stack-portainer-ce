@@ -1,8 +1,6 @@
 # Exemple de stack fonctionnant sur un Synology DS918+, DSM 7.1.1-42962 Update 6, via Portainer-ce (portainer/portainer-ce:latest) dans le paquet Docker (renomme Container Manager dans DSM 7.2)
 # Il faudra peut-etre adapter les images si vous utilisez un autre serveur/systeme
-# Une fois le container Portainer-ce installe, creer une stack en utilisant le web-editor, copier/coller l'ensemble de cette page dans le Web-editor : https://docs.portainer.io/user/docker/stacks/add
-# Editer les 'XXXX' ainsi que les PUID, PGID et volumes pour que cela fonctionne avec votre systeme
-# Pour connaitre le PUID et PGID d'un utilisateur que vous avez cree via l'interface de votre Synology : https://mariushosting.com/synology-how-to-find-uid-userid-and-gid-groupid/
+# Suivre le guide avant de c/c : https://github.com/Pandaarr/docker-compose-advanced-media#guide
 
 version: "3"
 services:
