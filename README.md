@@ -30,8 +30,7 @@ Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrai
     PS : Pour connaitre le PUID et PGID d'un utilisateur que vous avez créé via l'interface de votre Synology : <a href="https://mariushosting.com/synology-how-to-find-uid-userid-and-gid-groupid/" target="_blank">tuto</a>
     <li>Cliquer sur "Deploy the stack" tout en bas (vous inquiétez pas, c'est éditable à volonté si jamais vous zappez un truc !)</li>
     <li>Configurer l'ensemble des images installées avec leurs doc officielles (liens en # commentaire # dans le code du github)</li>
-</ol><br>
-<br>
+</ol>
 
 <h4>*Liste des containers présents dans la stack suggérée et leurs fonctionnalités :</h4>
 
