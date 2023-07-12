@@ -5,8 +5,10 @@ Guide d'installation d'outils d'automatisation et de gestion de téléchargement
 
 <i>Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrait fonctionner avec n'importe quel serveur sur lequel on peut installer Docker.</i><br>
 <br>
-<b>Toutes les app sensibles passent à travers un client VPN, donc avoir un compte chez un fournisseur VPN (Cyberghost, NordVPN...) est requis pour utiliser tout cela.</b><br>
-<br>
+<b>Toutes les app sensibles passent à travers un client VPN, donc avoir un compte chez un fournisseur VPN (Cyberghost, NordVPN...) est requis pour utiliser tout cela.</b>
+
+<h2>Guide</h2>
+
 <ol>
     <li>Créer un dossier partagé "docker", puis, dedans, le dossier "portainer"</li>
     <li>Installer Docker (ou Container Manager dans DSM 7.2) [<a href="https://linuxhint.com/run-docker-containers-synology-nas/" target="_blank">tuto</a>]</li>
