@@ -3,7 +3,7 @@ Guide d'installation d'outils d'automatisation et de gestion de téléchargement
 
 <h2>Caractéristiques</h2>
 
-<i>Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrait fonctionner avec n'importe quel serveur sur lequel on peut installer Docker.</i><br>
+Stack utilisé sur un Synology DS918+, DSM 7.1.1-42962 Update 6 mais cela devrait fonctionner avec n'importe quel serveur sur lequel on peut installer Docker.<br>
 <br>
 <b>Toutes les app sensibles passent à travers un client VPN, donc avoir un compte chez un fournisseur VPN (Cyberghost, NordVPN...) est requis pour utiliser tout cela.</b>
 
