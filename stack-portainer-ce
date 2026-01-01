@@ -110,7 +110,9 @@ services:
   flaresolverr:
    # serveur proxy pour contourner la protection Cloudflare et DDoS-GUARD, genre celle qu'il y a parfois sur YGG, a renseigner dans Jackett : https://github.com/FlareSolverr/FlareSolverr
     # DockerHub mirror flaresolverr/flaresolverr:latest
-    image: ghcr.io/flaresolverr/flaresolverr:latest
+    #image: ghcr.io/flaresolverr/flaresolverr:latest
+    #image: ghcr.io/flaresolverr/flaresolverr:pr-1282
+    image: 21hsmw/flaresolverr:nodriver # ce qui fonctionne chez moi depuis 2024
     container_name: flaresolverr
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
